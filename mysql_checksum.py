@@ -246,7 +246,7 @@ def main():
 
     # in theory, we could allow multiple instances of this script to run
     # on one server, as long as they are checksumming different replica sets.
-    # 
+    #
     try:
         lock = host_utils.bind_lock_socket('CHECKSUM_{}'.format(replica_set))
     except socket.error, (code, msg):
@@ -301,13 +301,18 @@ def main():
             # skipped, since we'll need to figure out diffs separately for
             # each slave box.
             for line in c_out.split("\n"):
+                # TODO: For percona toolkit 3.0, add another index for DIFF_ROWS at index 4
                 results = parse_checksum_row(line)
                 if results:
                     chunk_errors = int(results[1])
                     row_count = int(results[3])
                     chunk_count = int(results[4])
                     chunk_skips = int(results[5])
-
+                    # [START percona_toolkit_3.0]
+                    # diff_rows = int(results[4])
+                    # chunk_count = int(results[5])
+                    # chunk_skips = int(results[6])
+                    # [END percona_toolkit_3.0]
                     for slave in slaves:
                         rows_checked = 'NO'
                         sync_cmd = ""
